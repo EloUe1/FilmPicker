@@ -61,7 +61,7 @@ button_info_2 = InlineKeyboardButton(
     callback_data='button_info_2_pressed'
 )
 button_info_3 = InlineKeyboardButton(
-    text='Авторы посторов',
+    text='Авторы постеров',
     callback_data='button_info_3_pressed'
 )
 button_info_4 = InlineKeyboardButton(
@@ -162,14 +162,11 @@ async def command_info_handler(message: Message):
 
 @dp.callback_query(F.data.in_(['button_info_1_pressed']))
 async def button_info_press_1_handler(callback: CallbackQuery) -> None:
-    await callback.message.answer(text="Данный бот позволяет выбрать фильм по его описанию. Система случайна и "
-                                       "благодаря удобной навигации, помогает с подбором киноленты которая подойдёт "
-                                       "под "
-                                       "настроение пользователя. Система позволяет исключить преждевременное неприятие "
-                                       "к фильму из-за безынтересного названия или сомнительного постера "
-                                       "преждевременно, повышая шансы не упустить по-настоящему достойное кино.\n\n" +
-                                       "Бот разработан в 2024, коллекция фильмов постоянно пополняется свежими "
-                                       "популярными лентами. Спасибо что пользуетесь ботом.")
+    await callback.message.answer(text="Концепция бота заключается в выборе фильма по отрывку из его сюжета. Обычно "
+                                       "когда мы выбираем что посмотреть, то ориентируемся на названия и постеры к "
+                                       "фильмам, из-за чего порой упускаем отличные картины с заурядным названием "
+                                       "или картинкой. С этим ботом вы не пропустите ни одного стоящего фильма.\n\n" +
+                                       "Приятного просмотра.")
 
 
 @dp.callback_query(F.data.in_(['button_info_2_pressed']))
