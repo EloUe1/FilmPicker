@@ -25,3 +25,5 @@ services:
     restart: always
     links:
       - db
+    volumes:
+      - /root/project/images:/src/images
