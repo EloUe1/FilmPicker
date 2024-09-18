@@ -4,8 +4,7 @@ import random
 import sys
 import os
 from dotenv import load_dotenv
-from functions import connect, connect_all, call_names, call_authority, call_count_films, write_full_name
-
+from functions import DB
 
 from aiogram import Bot, Dispatcher, html, F
 from aiogram.client.default import DefaultBotProperties
@@ -25,13 +24,9 @@ SECRET_NUMBER = os.getenv("SECRET_NUMBER")
 SECRET_NAME = os.getenv("SECRET_NAME")
 
 
-film_id = 0
-out_string = ""
-
-
 bot = Bot(BOT_TOKEN)
 dp = Dispatcher()
-place = [str(i) for i in range(1, call_count_films()+1)]
+place = [str(i) for i in range(1, DB.call_count_films() + 1)]
 
 
 class Top(StatesGroup):
@@ -83,7 +78,7 @@ keyboard_info = InlineKeyboardMarkup(
 
 @dp.message(CommandStart())
 async def command_start_handler(message: Message) -> None:
-    write_full_name(message.from_user.id)
+    DB.write_full_name(message.from_user.id)
     await message.answer(text=f"""Hello, {html.bold(message.from_user.full_name)}!
 Добро пожаловать! Я FilmPicker бот,
 я помогаю выбрать новый фильм для просмотра :)
@@ -97,61 +92,34 @@ async def command_start_handler(message: Message) -> None:
 
 @dp.message(Command('film'))
 async def command_film_handler(message: Message) -> None:
-    global film_id
-    global out_string
-    write_full_name(message.from_user.id)
-    film_id = random.randint(1, call_count_films())
-    res = connect(film_id)
-    in_string = []
-    for el in res:
-        for sub_el in el:
-            in_string.append(sub_el)
-    out_string = f"""
-{html.bold(in_string[1])}
-{in_string[2]} год
-Режиссёр: {in_string[3]}
-
-В ролях: {in_string[5].title()}
-
-Жанр: {in_string[4].title()}"""
-    await message.answer(text=(in_string[6]), reply_markup=keyboard)
+    DB.write_full_name(message.from_user.id)
+    film_id = random.randint(1, DB.call_count_films())
+    res = DB.connect(film_id)
+    DB.write_film_position(film_id, message.from_user.id)
+    await message.answer(text=(res[0][6]), reply_markup=keyboard)
 
 
 @dp.callback_query(F.data.in_(['button_1_pressed']))
-async def buttons_press_1_handler(callback: CallbackQuery):
-    global film_id
-    global out_string
+async def buttons_press_1_handler(callback: CallbackQuery) -> None:
+    in_string = DB.call_film_info(callback.from_user.id)[0]
+    out_string = (f"{html.bold(in_string[1])}\n\n{in_string[2]} год\n\nРежиссёр: {in_string[3]}\n\nВ ролях: "
+                  f"{in_string[5].title()}\n\nЖанр: {in_string[4].title()}")
     await callback.answer()
     if len(out_string) < 4095:
-        await bot.send_photo(callback.from_user.id, FSInputFile(f"images/{film_id}.jpg"), caption=out_string,
-                             parse_mode=ParseMode.HTML)
+        await bot.send_photo(callback.from_user.id, FSInputFile(f"images/{DB.call_film_id(callback.from_user.id)}.jpg"),
+                             caption=out_string, parse_mode=ParseMode.HTML)
     else:
-        await bot.send_photo(callback.from_user.id, FSInputFile(f"images/{film_id}.jpg"),
-                             caption=((out_string[:4092])+"..."), parse_mode=ParseMode.HTML)
-    film_id = 0
-    out_string = ""
+        await bot.send_photo(callback.from_user.id, FSInputFile(f"images/{DB.call_film_id(callback.from_user.id)}.jpg"),
+                             caption=((out_string[:4092]) + "..."), parse_mode=ParseMode.HTML)
 
 
 @dp.callback_query(F.data.in_(['button_2_pressed']))
 async def buttons_press_2_handler(callback: CallbackQuery) -> None:
-    global film_id
-    global out_string
-    write_full_name(callback.from_user.id)
-    film_id = random.randint(1, call_count_films())
-    res = connect(film_id)
-    in_string = []
-    for el in res:
-        for sub_el in el:
-            in_string.append(sub_el)
-    out_string = f"""
-{html.bold(in_string[1])}
-{in_string[2]} год
-Режиссёр: {in_string[3]}
-
-В ролях: {in_string[5].title()}
-
-Жанр: {in_string[4].title()}"""
-    await callback.message.answer(text=(in_string[6]), reply_markup=keyboard)
+    DB.write_full_name(callback.from_user.id)
+    film_id = random.randint(1, DB.call_count_films())
+    res = DB.connect(film_id)
+    DB.write_film_position(film_id, callback.from_user.id)
+    await callback.message.answer(text=(res[0][6]), reply_markup=keyboard)
 
 
 @dp.message(Command('info'))
@@ -171,9 +139,9 @@ async def button_info_press_1_handler(callback: CallbackQuery) -> None:
 
 @dp.callback_query(F.data.in_(['button_info_2_pressed']))
 async def button_info_press_2_handler(callback: CallbackQuery) -> None:
-    res = connect_all()
+    res = DB.connect_all()
     in_string = []
-    for i in range(0, call_count_films()):
+    for i in range(0, DB.call_count_films()):
         k = 0
         in_string.append(f"{res[i][k]}.")
         in_string.append(f"{res[i][k + 1]} -")
@@ -182,7 +150,7 @@ async def button_info_press_2_handler(callback: CallbackQuery) -> None:
     if len(long) > 4095:
         count_messages = len(long) // 4095
         for i in range(count_messages):
-            await callback.message.answer(text=(' ' + long[(4095*i):(4095*(i+1))]))
+            await callback.message.answer(text=(' ' + long[(4095 * i):(4095 * (i + 1))]))
         await callback.message.answer(text=(' ' + long[(4095 * count_messages):]))
     else:
         await callback.message.answer(text=' ' + long)
@@ -198,9 +166,9 @@ async def button_info_press_3_handler(callback: CallbackQuery, state: FSMContext
 async def state_authority_handler(message: Message, state: FSMContext):
     await state.update_data(name=message.text)
     data_authority = await state.get_data()
-    count = call_names(data_authority)
+    count = DB.call_names(data_authority)
     if count == 1:
-        res = call_authority(data_authority)
+        res = DB.call_authority(data_authority)
         await message.answer(text=res)
         await state.clear()
     elif data_authority['name'] == SECRET_NAME:
