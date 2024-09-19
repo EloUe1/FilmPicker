@@ -43,3 +43,27 @@ SECRET_NAME="..."
 ```
 docker compose up
 ```
+6. Create tables in the database, fill the films2 table with data about your films.
+```
+CREATE TABLE "users_table" (
+    "tg_id"	VARCHAR,
+    "datetime"	VARCHAR
+);
+
+CREATE TABLE position (
+    "tg_id" VARCHAR,
+    "place" INT
+);
+
+CREATE TABLE "films2" (
+    "place"	INT,
+    "name"	VARCHAR,
+    "year"	VARCHAR,
+    "filmmaker"	VARCHAR,
+    "ganre"	VARCHAR,
+    "actors"	VARCHAR,
+    "description"	VARCHAR,
+    "authority"	VARCHAR
+);
+```
+7. Upload the posters to the folder following the path: /root/project/images
