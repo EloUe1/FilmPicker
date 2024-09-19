@@ -43,7 +43,7 @@ SECRET_NAME="..."
 ```
 docker compose up
 ```
-6. Create tables in the database, fill the films2 table with data about your films.
+6. Create tables in the database (use "your server IP":5000"), fill the films2 table with data about your films.
 ```
 CREATE TABLE "users_table" (
     "tg_id"	VARCHAR,
