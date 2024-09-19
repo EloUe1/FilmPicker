@@ -5,7 +5,7 @@ import sys
 import os
 from dotenv import load_dotenv
 from functions import DB
-from Buttons import keyboard, keyboard_info
+from buttons import keyboard, keyboard_info
 
 from aiogram import Bot, Dispatcher, html, F
 from aiogram.client.default import DefaultBotProperties
