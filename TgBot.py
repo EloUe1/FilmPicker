@@ -14,7 +14,7 @@ from aiogram.types import FSInputFile
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery
 
 
 load_dotenv()
