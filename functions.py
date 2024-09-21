@@ -15,7 +15,7 @@ class DBConnect:
     def __init__(self, PG_DB, PG_USER, PG_PASSWORD):
         self.conn = psycopg2.connect(database=PG_DB, user=PG_USER, password=PG_PASSWORD, host='db')
 
-    def connect(self, place):
+    def call_film(self, place):
         cur = self.conn.cursor()
         cur.execute(f"""SELECT *
         FROM films2
@@ -24,7 +24,7 @@ class DBConnect:
         cur.close()
         return res
 
-    def connect_all(self):
+    def call_all_films(self):
         cur = self.conn.cursor()
         cur.execute(f"""SELECT * FROM films2""")
         res = cur.fetchall()
@@ -84,7 +84,7 @@ class DBConnect:
 WHERE tg_id = '{tg_id}';""")
         cur.close()
 
-    def call_film_info(self, tg_id):
+    def call_film_by_id(self, tg_id):
         cur = self.conn.cursor()
         cur.execute(f"""SELECT *
 FROM films2

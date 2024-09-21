@@ -54,7 +54,7 @@ async def command_start_handler(message: Message) -> None:
 async def command_film_handler(message: Message) -> None:
     DB.write_full_name(message.from_user.id)
     film_id = random.randint(1, DB.call_count_films())
-    res = DB.connect(film_id)
+    res = DB.call_film_by_id(film_id)
     DB.write_film_position(film_id, message.from_user.id)
     await message.answer(text=(res[0][6]), reply_markup=keyboard)
 
@@ -77,7 +77,7 @@ async def buttons_press_1_handler(callback: CallbackQuery) -> None:
 async def buttons_press_2_handler(callback: CallbackQuery) -> None:
     DB.write_full_name(callback.from_user.id)
     film_id = random.randint(1, DB.call_count_films())
-    res = DB.connect(film_id)
+    res = DB.call_film_by_id(film_id)
     DB.write_film_position(film_id, callback.from_user.id)
     await callback.message.answer(text=(res[0][6]), reply_markup=keyboard)
 
@@ -99,7 +99,7 @@ async def button_info_press_1_handler(callback: CallbackQuery) -> None:
 
 @dp.callback_query(F.data.in_(['button_info_2_pressed']))
 async def button_info_press_2_handler(callback: CallbackQuery) -> None:
-    res = DB.connect_all()
+    res = DB.call_all_films()
     in_string = []
     for i in range(0, DB.call_count_films()):
         k = 0
